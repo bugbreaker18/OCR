@@ -29,18 +29,30 @@ def ocr_image(image_path):
                 roi = gray[y:y + h, x:x + w]
                 text = pytesseract.image_to_string(roi)
                 
-                return text
+                return text, approx
         
     except Exception as e:
         print("Error:", str(e))
-        return None
+        return None, None
 
 if __name__ == "__main__":
     image_path = "path_to_your_image.jpg"  # Change this to the path of your image
-    extracted_text = ocr_image(image_path)
+    extracted_text, contour = ocr_image(image_path)
     
     if extracted_text:
         print("Extracted Text:")
         print(extracted_text)
+        
+        # Save the extracted text to a text file
+        with open("extracted_text.txt", "w") as text_file:
+            text_file.write(extracted_text)
+        
+        # Display the original image with the detected contour
+        image = cv2.imread(image_path)
+        cv2.drawContours(image, [contour], -1, (0, 255, 0), 2)
+        cv2.imshow("Image with Contour", image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
     else:
         print("Text extraction failed.")
